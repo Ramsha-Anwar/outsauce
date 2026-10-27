@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Outsauce",
-  description: "Hunt jobs, gigs, and candidates from LinkedIn, Upwork, Fiverr, and Reddit. AI-powered profile optimization and networking.",
+  description: "Preview profile-aware job discovery with deterministic sample listings. Live sources are not connected yet.",
 };
 
 export default function RootLayout({

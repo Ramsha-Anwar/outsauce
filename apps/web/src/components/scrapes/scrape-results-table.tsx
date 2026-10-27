@@ -7,6 +7,7 @@ import { apiClient } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
   Sheet,
   SheetContent,
@@ -51,6 +52,7 @@ export function ScrapeResultsTable({ results }: { results: ScrapeResult[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selected = results.find((r) => r.id === selectedId) ?? null;
+  const hasDemoSamples = results.some((result) => result.source === 'demo');
 
   async function handleSaveLead(resultId: string) {
     setSavingIds((prev) => new Set(prev).add(resultId));
@@ -107,11 +109,20 @@ export function ScrapeResultsTable({ results }: { results: ScrapeResult[] }) {
 
   return (
     <div className="space-y-3">
-      <div className="flex justify-end">
-        <Button size="sm" onClick={handleBulkSave} disabled={bulkSaving || allSaved}>
-          {bulkSaving ? 'Saving...' : allSaved ? 'All saved' : 'Save All as Leads'}
-        </Button>
-      </div>
+      {hasDemoSamples && (
+        <Alert className="border-amber-500/30 bg-amber-500/5">
+          <AlertDescription className="text-xs text-muted-foreground">
+            These are illustrative demo records, not real job openings. They have no application link and are not scored by AI.
+          </AlertDescription>
+        </Alert>
+      )}
+      {!hasDemoSamples && (
+        <div className="flex justify-end">
+          <Button size="sm" onClick={handleBulkSave} disabled={bulkSaving || allSaved}>
+            {bulkSaving ? 'Saving...' : allSaved ? 'All saved' : 'Save All as Leads'}
+          </Button>
+        </div>
+      )}
 
       <Card>
         <div className="overflow-x-auto">
@@ -130,7 +141,7 @@ export function ScrapeResultsTable({ results }: { results: ScrapeResult[] }) {
             <TableBody>
               {results.map((result) => {
                 const isSaved = savedIds.has(result.id);
-                const isVerified = result.metadata?.verified === true;
+                const isVerified = result.metadata?.data_origin === 'verified_source_adapter';
                 return (
                   <TableRow
                     key={result.id}
@@ -147,6 +158,11 @@ export function ScrapeResultsTable({ results }: { results: ScrapeResult[] }) {
                             <span className="text-sm font-medium text-foreground truncate min-w-0">
                               {result.title}
                             </span>
+                            {isDemoResult(result) && (
+                              <span className="inline-flex items-center rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-inset ring-amber-500/20 dark:text-amber-300 flex-shrink-0">
+                                Demo sample
+                              </span>
+                            )}
                             {isVerified && (
                               <span
                                 className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-600 ring-1 ring-inset ring-emerald-500/20 dark:text-emerald-400 flex-shrink-0"
@@ -170,11 +186,15 @@ export function ScrapeResultsTable({ results }: { results: ScrapeResult[] }) {
                     </TableCell>
                     <TableCell className="hidden sm:table-cell">
                       <Badge variant="secondary" className="capitalize">
-                        {result.source}
+                        {result.source === 'demo' ? 'Demo' : result.source}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <FitBadge score={result.fit_score} reasoning={result.fit_reasoning} />
+                      {isDemoResult(result) ? (
+                        <Badge variant="outline">Not scored</Badge>
+                      ) : (
+                        <FitBadge score={result.fit_score} reasoning={result.fit_reasoning} />
+                      )}
                     </TableCell>
                     <TableCell className="hidden lg:table-cell text-sm text-muted-foreground truncate">
                       {result.location || '—'}
@@ -210,9 +230,17 @@ export function ScrapeResultsTable({ results }: { results: ScrapeResult[] }) {
             <SheetTitle>{selected?.title ?? 'Result details'}</SheetTitle>
           </SheetHeader>
           {selected && (
-            <LeadCard
-              lead={selected as LeadCardData}
-              footer={
+            <div className="space-y-4">
+              {isDemoResult(selected) && (
+                <Alert className="border-amber-500/30 bg-amber-500/5">
+                  <AlertDescription className="text-xs text-muted-foreground">
+                    Sample data only. This record is not a real vacancy and cannot be saved or used for AI tailoring.
+                  </AlertDescription>
+                </Alert>
+              )}
+              <LeadCard
+                lead={selected as LeadCardData}
+                footer={isDemoResult(selected) ? undefined : (
                 <div className="flex items-center justify-between gap-2">
                   <Button
                     variant="outline"
@@ -241,11 +269,16 @@ export function ScrapeResultsTable({ results }: { results: ScrapeResult[] }) {
                     </Button>
                   )}
                 </div>
-              }
-            />
+                )}
+              />
+            </div>
           )}
         </SheetContent>
       </Sheet>
     </div>
   );
+}
+
+function isDemoResult(result: ScrapeResult) {
+  return result.source === 'demo' || result.metadata?.data_origin === 'demo_fixture';
 }

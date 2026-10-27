@@ -111,7 +111,7 @@ export default function CandidateProfilePage() {
           AI Fit Scoring Profile
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Provide your target roles, skills, and resume details. OutSauce uses this to score and surface the best-fit scraped leads automatically.
+          Store your target roles, skills, and resume details. Demo hunts do not use this profile for AI scoring; live matching is not enabled yet.
         </p>
       </div>
 
@@ -119,7 +119,7 @@ export default function CandidateProfilePage() {
         <CardHeader>
           <CardTitle>Matching Preferences</CardTitle>
           <CardDescription>
-            Scrapes will be automatically evaluated against this profile after execution.
+            Profile-based scoring is not enabled in the current demo workflow.
           </CardDescription>
         </CardHeader>
         <CardContent>

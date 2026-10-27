@@ -76,6 +76,7 @@ const STATUS_COLORS: Record<LeadStatus, string> = {
 };
 
 const SOURCE_LABEL: Record<string, string> = {
+  demo: 'Demo sample',
   linkedin: 'LinkedIn',
   upwork: 'Upwork',
   fiverr: 'Fiverr',
@@ -164,7 +165,8 @@ export function LeadTable({
             const sourceKey = (lead.source ?? '').toLowerCase();
             const sourceAccent =
               SOURCE_ACCENT[sourceKey] ?? 'bg-muted text-muted-foreground ring-border';
-            const isVerified = lead.metadata?.verified === true;
+            const isDemo = sourceKey === 'demo' || lead.metadata?.data_origin === 'demo_fixture';
+            const isVerified = lead.metadata?.data_origin === 'verified_source_adapter';
 
             return (
               <TableRow key={lead.id}>
@@ -184,6 +186,11 @@ export function LeadTable({
                       >
                         {cleanTitle(lead.title)}
                       </Link>
+                      {isDemo && (
+                        <span className="mt-1 inline-flex items-center rounded-full bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-inset ring-amber-500/20 dark:text-amber-300">
+                          Sample data — not a live job
+                        </span>
+                      )}
                       {/* tags surface here as small read-only chips, editing happens on the detail page */}
                       {lead.tags && lead.tags.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
@@ -229,7 +236,11 @@ export function LeadTable({
 
                 {/* Match */}
                 <TableCell>
-                  <FitBadge score={lead.fit_score} reasoning={lead.fit_reasoning} />
+                  {isDemo ? (
+                    <Badge variant="outline">Not scored</Badge>
+                  ) : (
+                    <FitBadge score={lead.fit_score} reasoning={lead.fit_reasoning} />
+                  )}
                 </TableCell>
 
                 {/* Status */}

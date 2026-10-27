@@ -35,14 +35,14 @@ An all-in-one platform for job seekers, freelancers, and employers to discover o
 
 ## Features
 
-### Multi-Platform Scraping
-Configure and launch scrape jobs across LinkedIn, Upwork, Fiverr, and Reddit. Define search criteria including keywords, location, salary range, experience level, and remote preference. Monitor scrape progress in real time with live status updates via Supabase Realtime.
+### Hunt flow (current implementation)
+Create a Pakistan-focused demo hunt using deterministic sample records and criteria such as keywords, city, salary range, experience level, and remote preference. Every sample row is stored with source `demo`, a null application URL, and `data_origin: demo_fixture`. The UI labels it as sample data, does not offer save/apply/AI-tailoring actions, and does not call a job site, Apify, n8n, or an AI provider. LinkedIn, Upwork, Fiverr, and Reddit are not connected as live sources. The n8n callback endpoint currently returns `503 Service Unavailable` until a source and authenticated workflow are reviewed.
 
 ### Lead Management
 Save scrape results as leads, organize them into color-coded folders, apply custom tags, and track status through a pipeline (New, Contacted, In Progress, Closed, Archived). Add notes, bulk-save results, and export leads as CSV or JSON.
 
-### Lead Match Scoring
-Every scraped result is automatically scored for relevance against the user's profile and search criteria as it's ingested from n8n. Scoring runs through `LeadScoringService`, which calls Groq (Llama 3.3 70B) to rate each lead and surface the strongest matches first. Scores appear as a badge in the leads table, letting users prioritize outreach instead of manually triaging every result.
+### Match scoring (not enabled for demo hunts)
+The repository contains a Groq-backed lead scoring service, but demo results bypass lead creation and scoring. No AI match score is produced in the current hunt path. A provider key may cause external usage charges; do not configure a paid provider under the project's $0 budget.
 
 ### Professional Networking
 Discover other users on the platform with an interest/skill-based matching algorithm. Send connection requests with personalized messages, accept or reject incoming requests, and manage your network.
@@ -50,7 +50,7 @@ Discover other users on the platform with an interest/skill-based matching algor
 ### Messaging
 Real-time 1:1 conversations with other users. Messages are delivered via Supabase Realtime with read receipts and unread counts.
 
-### AI Content Generation
+### AI Content Generation (separate, provider-dependent feature)
 Generate professional content tailored to specific platforms:
 - **Bio** — personal/professional biography
 - **Resume** — formatted resume content
@@ -58,7 +58,7 @@ Generate professional content tailored to specific platforms:
 - **Gig Description** — freelance listing descriptions
 - **Profile Summary** — platform-optimized profile summaries
 
-Target platforms: LinkedIn, Upwork, Fiverr, Reddit.
+Target platforms in the legacy UI: LinkedIn, Upwork, Fiverr, Reddit. These API calls require a configured provider and are not part of a demo hunt; provider usage may cost money and must remain disabled under the $0 project budget unless a verified no-cost path is implemented.
 
 ### AI-Tailored Content Generation
 Beyond generic content generation, users can tailor a resume or cover letter to a specific saved lead. The tailoring workflow combines deterministic keyword-matching (scoring overlap between the lead's listing and the user's base content) with Groq-powered rewriting (Llama 3.3 70B) to align tone, keywords, and emphasis with the target listing — producing a version noticeably closer to what an ATS or hiring manager for that specific role expects, rather than a one-size-fits-all draft.
@@ -110,8 +110,8 @@ A secure, role-gated admin panel accessible only to users with `is_admin = true`
 | **Auth** | Supabase Auth (SSR) | — |
 | **Realtime** | Supabase Realtime | — |
 | **Payments** | Stripe | — |
-| **Scraping Engine** | n8n (webhook integration) | — |
-| **AI** | Groq (Llama 3.3 70B) | — |
+| **Current hunt mode** | Deterministic demo fixtures | Local filtering; no live source calls |
+| **Optional AI code** | Groq SDK integration | Not used by demo hunts; provider use may cost money |
 | **Runtime** | Node.js | 22 |
 | **Language** | TypeScript | 5.x |
 
@@ -150,8 +150,8 @@ A secure, role-gated admin panel accessible only to users with `is_admin = true`
            ┌───────────────┼───────────────┐
            │               │               │
     ┌──────▼──────┐ ┌──────▼──────┐ ┌──────▼──────┐
-    │    Stripe   │ │     n8n     │ │    Groq     │
-    │  (Payments) │ │  (Scraping) │ │   (AI Gen)  │
+    │  Optional   │ │   Demo     │ │   Optional │
+    │  Billing    │ │  Fixtures  │ │  AI APIs   │
     └─────────────┘ └─────────────┘ └─────────────┘
 ```
 
@@ -182,7 +182,7 @@ outsauce/
 │   │   │   └── modules/
 │   │   │       ├── auth/              # Profile CRUD, onboarding
 │   │   │       ├── scrapes/           # Scrape job management
-│   │   │       ├── webhooks/          # n8n result ingestion
+│   │   │       ├── webhooks/          # n8n callback route (disabled; returns 503)
 │   │   │       ├── leads/             # Lead/folder/tag CRUD
 │   │   │       ├── export/            # CSV/JSON/PDF export
 │   │   │       ├── messages/          # Conversations & messaging
@@ -288,7 +288,6 @@ outsauce/
 - **Node.js** 22+ (see `.nvmrc`)
 - **pnpm** 10.29+ (`corepack enable && corepack prepare pnpm@10.29.3 --activate`)
 - **Supabase CLI** for local development (`npx supabase init`)
-- **n8n** (optional, for scraping workflows)
 - **Stripe CLI** (optional, for billing webhook testing)
 
 ### Installation
@@ -317,8 +316,8 @@ cp .env.example .env
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (server-side only) |
 | `NEXT_PUBLIC_API_URL` | Yes | NestJS API base URL (default: `http://localhost:3001`) |
 | `API_PORT` | No | API server port (default: `3001`) |
-| `N8N_WEBHOOK_URL` | No | n8n webhook endpoint for triggering scrapes |
-| `N8N_WEBHOOK_SECRET` | No | Shared secret for n8n webhook authentication |
+| `N8N_WEBHOOK_URL` | No | Dormant; the current demo hunt does not dispatch n8n |
+| `N8N_WEBHOOK_SECRET` | No | Dormant; callback ingestion is disabled |
 | `STRIPE_SECRET_KEY` | No | Stripe secret key for billing |
 | `STRIPE_WEBHOOK_SECRET` | No | Stripe webhook signing secret |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | No | Stripe publishable key (client-side) |
@@ -573,7 +572,7 @@ The API runs on port 3001 with a global `/api` prefix. All endpoints (except web
 #### Webhooks (`/api/webhooks`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/webhooks/n8n/results` | Receive scrape results from n8n |
+| `POST` | `/webhooks/n8n/results` | Returns 503 until a reviewed live source and authenticated workflow are enabled |
 
 #### Admin (`/api/admin`) — requires `is_admin = true`
 | Method | Endpoint | Description |
@@ -607,8 +606,8 @@ The API is organized into 10 feature modules, each with its own controller and s
 | Module | Responsibility |
 |--------|---------------|
 | `AuthModule` | User profiles, onboarding |
-| `ScrapesModule` | Scrape job lifecycle, n8n triggers |
-| `WebhooksModule` | Ingest results from n8n |
+| `ScrapesModule` | Demo hunt lifecycle and deterministic fixture persistence |
+| `WebhooksModule` | n8n callback route; ingestion is currently disabled |
 | `LeadsModule` | Leads, folders, tags CRUD |
 | `ExportModule` | Lead data export (CSV/JSON/PDF) |
 | `MessagesModule` | Conversations and real-time messaging |
@@ -675,10 +674,8 @@ contact_submissions   (public inserts, admin reads/writes)
 ### Supabase
 Primary backend-as-a-service providing PostgreSQL database, authentication (email/password + OAuth), real-time subscriptions, and Row Level Security.
 
-### n8n (Scraping Engine)
-Outsauce triggers n8n workflows via webhook to perform the actual web scraping. The n8n workflow scrapes the configured sources and posts results back to `/api/webhooks/n8n/results`. This decouples the scraping logic from the main application.
-
-**Setup:** Deploy n8n and configure a webhook workflow that accepts scrape criteria and returns structured results to the callback URL.
+### n8n (not active)
+The repository has no checked-in n8n workflow. The callback route currently returns `503 Service Unavailable`; demo hunts do not dispatch webhooks. Re-enable callback ingestion only after the source access method, $0 operating limit, workflow export, authentication, and payload contract are reviewed.
 
 ### Stripe (Payments)
 Handles subscription checkout, plan changes, and customer portal. Webhook events update the local `subscriptions` table.
@@ -689,9 +686,9 @@ Handles subscription checkout, plan changes, and customer portal. Webhook events
 Powers three AI-driven capabilities via the Groq API (Llama 3.3 70B):
 - **Content generation** — bio, resume, cover letter, gig description, profile summary
 - **Content tailoring** — rewriting a resume/cover letter against a specific lead, combined with deterministic keyword-match scoring
-- **Lead match scoring** — automatic relevance scoring of scrape results as they're ingested, via `LeadScoringService`
+- **Lead match scoring** — the code contains a Groq-backed scorer, but the current demo hunt bypasses it and produces no fit score.
 
-Set `GROQ_API_KEY` to enable. The default model is `llama-3.3-70b-versatile`; override with `GROQ_MODEL` if needed. Without a key set, generation, tailoring, and scoring endpoints return a 503.
+AI endpoints require `GROQ_API_KEY`; provider usage may be chargeable. Do not configure or call a paid provider under the project's $0 budget. The demo hunt does not make model calls.
 
 ---
 

@@ -58,7 +58,7 @@ export default function AdminScrapesPage() {
           </h1>
         </div>
         <p className="text-base text-text-muted">
-          Monitor global n8n infrastructure and job execution success rates.
+          Review recorded hunt runs. Live source workflows are currently disabled.
         </p>
       </motion.div>
 
@@ -87,7 +87,7 @@ export default function AdminScrapesPage() {
         <DashboardMetricCard 
           title="Running" 
           value={loading ? "..." : data?.running || 0} 
-          description="Active n8n instances" 
+          description="Currently active runs"
           icon={<RefreshCw className="h-5 w-5 text-blue-500 animate-[spin_4s_linear_infinite]" />}
           iconContainerClass="bg-blue-500/10 border-blue-500/20 text-blue-500"
           delay={0.3}

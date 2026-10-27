@@ -337,7 +337,7 @@ export default function LandingPage() {
               variants={fadeIn}
               className="text-lg text-text-muted max-w-2xl mb-10 font-medium leading-relaxed"
             >
-              Discover gigs, manage leads, and generate AI-tailored applications across LinkedIn, Upwork, and Fiverr. All unified in one beautiful dashboard.
+              Explore the profile and hunt screens with fixed Pakistan-focused sample listings. Live job sources and AI ranking are not connected in this build.
             </motion.p>
 
             <motion.div variants={fadeIn} className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
@@ -380,13 +380,13 @@ export default function LandingPage() {
           >
             <BentoCard
               title="Multi-Platform Hunting"
-              description="Configure highly targeted hunts across LinkedIn, Upwork, Fiverr, and Reddit. Monitor progress in real-time."
+              description="Try hunt criteria with fixed demo listings. Live job-source integrations are not enabled yet."
               icon={Search}
               className="min-w-[75vw] snap-center md:min-w-0 md:col-span-2 lg:col-span-2"
             />
             <BentoCard
               title="AI Content Engine"
-              description="Automatically generate platform-optimized bios, resumes, cover letters, and gig descriptions."
+              description="Optional AI writing tools require a separately configured provider. Demo hunts do not make AI calls."
               icon={Sparkles}
               className="min-w-[75vw] snap-center md:min-w-0"
             />
@@ -469,9 +469,9 @@ export default function LandingPage() {
 
               <div className="space-y-6">
                 {[
-                  { title: "Define your criteria", desc: "Set keywords, location, and platform targets.", icon: Target },
-                  { title: "Let the engine hunt", desc: "Our n8n-powered backend gathers high-quality leads.", icon: Zap },
-                  { title: "Apply with AI", desc: "Generate tailored cover letters and reach out instantly.", icon: Briefcase }
+                  { title: "Define your criteria", desc: "Set keywords, Pakistan location, salary, and work preferences.", icon: Target },
+                  { title: "Preview sample listings", desc: "Inspect deterministic demo records; no job site or AI provider is called.", icon: Zap },
+                  { title: "Review the workflow", desc: "Live sources and AI ranking will be enabled only after a zero-cost path is verified.", icon: Briefcase }
                 ].map((step, i) => (
                   <div key={i} className="flex gap-4">
                     <div className="flex-shrink-0 mt-1 flex h-8 w-8 items-center justify-center rounded-full bg-brand-red/10 text-brand-red">
@@ -614,8 +614,8 @@ export default function LandingPage() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="bg-white/90 dark:bg-white/[0.05] rounded-[2rem] p-6 md:p-10 border border-black/[0.08] dark:border-white/[0.1] backdrop-blur-md"
           >
-            <FAQItem question="Which platforms do you currently support?" answer="Outsauce currently supports hunting and integration with LinkedIn, Upwork, Fiverr, and Reddit. We are actively working on adding more platforms based on community feedback." />
-            <FAQItem question="How does the AI content generation work?" answer="We use advanced LLMs fine-tuned for professional writing. When you select a gig or job lead, the AI analyzes the requirements and your profile to generate a highly tailored cover letter, bio, or proposal." />
+            <FAQItem question="Which job sources do you currently support?" answer="No live job source is enabled in this build. Demo hunts use fixed sample records and do not contact job sites. A source will be enabled only after its access method and zero-cost operation are verified." />
+            <FAQItem question="Does a demo hunt use AI or cost money?" answer="No. Demo hunts filter fixed sample records locally. They do not call an AI provider, scraper, or paid service." />
             <FAQItem question="Is there a limit on how many leads I can save?" answer="The Free plan allows you to save 20 leads per month. Starter allows 200, while the Pro and Enterprise plans offer unlimited lead storage and organization." />
             <FAQItem question="Can I cancel my subscription at any time?" answer="Yes! You can cancel or change your subscription tier at any time from your billing dashboard. There are no lock-in contracts." />
             <FAQItem question="Do I need any technical knowledge to use the hunter?" answer="Not at all. You simply type in what you're looking for (e.g., 'React Developer, Remote, $100k+') and our automated backend handles the complex hunt process for you." />

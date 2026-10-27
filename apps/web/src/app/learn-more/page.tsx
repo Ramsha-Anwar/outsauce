@@ -236,39 +236,39 @@ export default function LearnMorePage() {
             <section id="the-architecture" className="mb-24 scroll-mt-32">
               <h2 className="text-3xl font-extrabold mb-6 text-text-main">02. The Architecture of Outsauce</h2>
               <p className="text-lg text-text-muted leading-relaxed mb-6 font-medium">
-                Under the hood, Outsauce is powered by a robust three-tier architecture designed for massive concurrency. At its core is our <strong>Multi-Platform Hunting Engine</strong>.
+                Outsauce is a Next.js and NestJS application backed by Supabase. The current hunt flow is a bounded demo path; it is not a production multi-platform scraping engine.
               </p>
               <p className="text-lg text-text-muted leading-relaxed mb-8 font-medium">
-                Instead of running fragile, client-side scripts, we orchestrate headless browsers and API aggregators using <strong>n8n</strong>—a powerful workflow automation tool. When you configure a "Hunt," you define your target keywords, salary expectations, and geographic locations. The Outsauce NestJS backend immediately dispatches a webhook to n8n, which spawns concurrent runners targeting LinkedIn, Upwork, and Reddit simultaneously.
+                When you create a demo hunt, the NestJS API filters a small, deterministic set of illustrative Pakistan-focused records using your criteria and stores the matches. No job site, Apify Actor, n8n workflow, or AI provider is called. Live sources will remain unavailable until a zero-cost access path and an authenticated workflow are reviewed.
               </p>
 
               <div className="my-12 p-8 rounded-3xl bg-brand-navy dark:bg-black/80 border border-brand-red/20 shadow-2xl overflow-hidden relative">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-brand-red/10 blur-[80px] rounded-full pointer-events-none" />
                 <div className="flex flex-col gap-4 text-sm font-mono relative z-10">
                   <div className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
-                    <span className="text-emerald-400">POST /api/hunts</span>
+                    <span className="text-emerald-400">POST /api/scrapes</span>
                     <span className="text-slate-400">Next.js Frontend</span>
                   </div>
                   <div className="flex justify-center">
                     <div className="w-px h-6 bg-white/20"></div>
                   </div>
                   <div className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/10">
-                    <span className="text-blue-400">Webhook Dispatch</span>
-                    <span className="text-slate-400">NestJS Backend</span>
+                    <span className="text-blue-400">Filter fixed fixtures</span>
+                    <span className="text-slate-400">NestJS API</span>
                   </div>
                   <div className="flex justify-center">
                     <div className="w-px h-6 bg-white/20"></div>
                   </div>
                   <div className="grid grid-cols-3 gap-4">
-                    <div className="bg-white/5 p-4 rounded-xl border border-brand-red/30 text-center text-white">LinkedIn</div>
-                    <div className="bg-white/5 p-4 rounded-xl border border-brand-red/30 text-center text-white">Upwork</div>
-                    <div className="bg-white/5 p-4 rounded-xl border border-brand-red/30 text-center text-white">Reddit</div>
+                    <div className="bg-white/5 p-4 rounded-xl border border-brand-red/30 text-center text-white">Sample records</div>
+                    <div className="bg-white/5 p-4 rounded-xl border border-brand-red/30 text-center text-white">No source request</div>
+                    <div className="bg-white/5 p-4 rounded-xl border border-brand-red/30 text-center text-white">Demo label</div>
                   </div>
                 </div>
               </div>
 
               <p className="text-lg text-text-muted leading-relaxed mb-6 font-medium">
-                The results stream back in real-time via Supabase WebSockets, bypassing the need for manual page refreshes. You get raw, structured data representing the best opportunities on the internet, localized instantly to your dashboard.
+                The API stores each sample as a result with a distinct demo source, no application URL, and explicit fixture provenance. The hunt page displays the result and its sample-data notice; it does not present these rows as open vacancies.
               </p>
             </section>
 
@@ -309,7 +309,7 @@ export default function LearnMorePage() {
                 The biggest bottleneck in securing high-quality work is the application process itself. Generic cover letters are instantly rejected by clients and ATS systems alike. Crafting a hyper-personalized response for every gig is mentally exhausting.
               </p>
               <p className="text-lg text-text-muted leading-relaxed mb-8 font-medium">
-                We integrated OpenAI directly into the lead management pipeline. Our prompt architecture doesn't just ask an LLM to "write a cover letter." Instead, Outsauce passes a heavily structured payload containing:
+                The repository contains optional AI-writing endpoints that use a configured third-party model provider. The demo hunt and its sample records do not call those endpoints, and AI ranking is not enabled. Provider usage may incur charges, so it must remain disabled under the project's $0 budget unless a verified no-cost path is implemented.
               </p>
 
               <div className="bg-white/80 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-2xl p-6 mb-8 font-mono text-sm text-text-main backdrop-blur-md">

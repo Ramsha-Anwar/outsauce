@@ -41,6 +41,7 @@ interface ScrapeResult {
   salary_range: string | null;
   fit_score?: number | null;
   fit_reasoning?: string | null;
+  metadata?: Record<string, unknown> | null;
 }
 
 export default function ScrapeDetailPage() {
@@ -132,7 +133,9 @@ export default function ScrapeDetailPage() {
     if (job?.status !== 'completed' || results.length === 0) return;
 
     const hasUnscoredLeads = results.some(
-      (r) => r.fit_score === null || r.fit_score === undefined,
+      (r) =>
+        r.source !== 'demo' &&
+        (r.fit_score === null || r.fit_score === undefined),
     );
     if (!hasUnscoredLeads) return;
 
@@ -163,6 +166,8 @@ export default function ScrapeDetailPage() {
       </Alert>
     );
   }
+
+  const isDemoHunt = job.sources.includes('demo');
 
   return (
     <div className="space-y-6">
@@ -208,11 +213,19 @@ export default function ScrapeDetailPage() {
         <div className="mt-2 flex flex-wrap gap-2">
           {job.sources.map((source) => (
             <Badge key={source} variant="secondary" className="capitalize">
-              {source}
+              {source === 'demo' ? 'Demo listings' : source}
             </Badge>
           ))}
         </div>
       </div>
+
+      {isDemoHunt && (
+        <Alert className="border-amber-500/30 bg-amber-500/5">
+          <AlertDescription className="text-xs text-muted-foreground">
+            Demo hunt: these are fixed illustrative samples, not live vacancies. No scraper or AI provider was called.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
@@ -286,6 +299,16 @@ export default function ScrapeDetailPage() {
           </h2>
           <ScrapeResultsTable results={results} />
         </div>
+      )}
+
+      {job.status === 'completed' && results.length === 0 && (
+        <Alert>
+          <AlertDescription>
+            {isDemoHunt
+              ? 'No sample listings matched these criteria. Try broader keywords or location.'
+              : 'This hunt completed without results.'}
+          </AlertDescription>
+        </Alert>
       )}
     </div>
   );

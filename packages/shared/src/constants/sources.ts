@@ -8,6 +8,7 @@ export interface SourceMeta {
 }
 
 export const SCRAPE_SOURCES: SourceMeta[] = [
+  { id: 'demo', label: 'Demo listings', icon: 'briefcase', supportedTargets: ['jobs'] },
   { id: 'linkedin', label: 'LinkedIn', icon: 'linkedin', supportedTargets: ['jobs', 'candidates'] },
   { id: 'upwork', label: 'Upwork', icon: 'upwork', supportedTargets: ['gigs', 'candidates'] },
   { id: 'fiverr', label: 'Fiverr', icon: 'fiverr', supportedTargets: ['gigs', 'candidates'] },

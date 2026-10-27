@@ -2,7 +2,9 @@ import { z } from 'zod';
 
 export const createScrapeSchema = z.object({
   name: z.string().min(1).max(200),
-  sources: z.array(z.enum(['linkedin', 'upwork', 'fiverr', 'reddit'])).min(1),
+  sources: z
+    .array(z.enum(['linkedin', 'upwork', 'fiverr', 'reddit', 'demo']))
+    .min(1),
   criteria: z.object({
     keywords: z.array(z.string().min(1)).min(1),
     location: z.string().optional(),
@@ -12,6 +14,14 @@ export const createScrapeSchema = z.object({
     experience_level: z.string().optional(),
     job_type: z.string().optional(),
   }).passthrough(),
+}).superRefine((input, ctx) => {
+  if (input.sources.includes('demo') && input.sources.length !== 1) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['sources'],
+      message: 'Demo listings cannot be combined with live sources.',
+    });
+  }
 });
 
 export type CreateScrapeInput = z.infer<typeof createScrapeSchema>;

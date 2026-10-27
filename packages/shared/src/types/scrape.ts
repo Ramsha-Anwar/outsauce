@@ -1,4 +1,4 @@
-export type ScrapeSource = 'linkedin' | 'upwork' | 'fiverr' | 'reddit';
+export type ScrapeSource = 'linkedin' | 'upwork' | 'fiverr' | 'reddit' | 'demo';
 export type ScrapeStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
 
 export interface ScrapeCriteria {

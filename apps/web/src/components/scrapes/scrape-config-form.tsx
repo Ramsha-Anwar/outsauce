@@ -1,15 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { apiClient } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Sparkles } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -19,7 +17,8 @@ import {
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
 
-const SOURCES = [
+const SOURCE_OPTIONS = [
+  { id: 'demo', label: 'Demo listings' },
   { id: 'linkedin', label: 'LinkedIn' },
   { id: 'upwork', label: 'Upwork' },
   { id: 'fiverr', label: 'Fiverr' },
@@ -29,7 +28,7 @@ const SOURCES = [
 export function ScrapeConfigForm() {
   const router = useRouter();
   const [name, setName] = useState('');
-  const [sources, setSources] = useState<string[]>([]);
+  const [sources, setSources] = useState<string[]>(['demo']);
   const [keywords, setKeywords] = useState('');
   const [location, setLocation] = useState('');
   const [remote, setRemote] = useState(false);
@@ -38,20 +37,6 @@ export function ScrapeConfigForm() {
   const [experienceLevel, setExperienceLevel] = useState('any');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [hasProfile, setHasProfile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    async function checkProfile() {
-      try {
-        const data = await apiClient<{ resume_text?: string; skills?: string[] } | null>('/api/profile');
-        const isConfigured = Boolean(data && (data.resume_text || (data.skills && data.skills.length > 0)));
-        setHasProfile(isConfigured);
-      } catch {
-        setHasProfile(false);
-      }
-    }
-    checkProfile();
-  }, []);
 
   function toggleSource(source: string) {
     setSources((prev) =>
@@ -66,7 +51,7 @@ export function ScrapeConfigForm() {
     setError(null);
 
     if (sources.length === 0) {
-      setError('Select at least one source');
+      setError('Select Demo listings. Live sources are not connected yet.');
       return;
     }
 
@@ -108,17 +93,12 @@ export function ScrapeConfigForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {hasProfile === false && (
-        <Alert className="border-brand-red/30 bg-brand-red/5">
-          <Sparkles className="h-4 w-4 text-brand-red" />
-          <AlertDescription className="text-xs text-muted-foreground flex items-center justify-between">
-            <span>Add your candidate profile to enable AI match scoring for scraped leads.</span>
-            <Link href="/settings/profile" className="font-semibold text-brand-red hover:underline ml-2">
-              Set profile &rarr;
-            </Link>
-          </AlertDescription>
-        </Alert>
-      )}
+      <Alert className="border-amber-500/30 bg-amber-500/5">
+        <AlertDescription className="text-xs text-muted-foreground">
+          Demo mode uses fixed sample data only. It does not query job sites, call an AI service, or create a real vacancy.
+          Live sources are unavailable until a zero-cost source and its access terms are reviewed.
+        </AlertDescription>
+      </Alert>
 
       {error && (
         <Alert variant="destructive">
@@ -138,21 +118,25 @@ export function ScrapeConfigForm() {
       </div>
 
       <div className="space-y-2">
-        <Label>Sources</Label>
+          <Label>Source mode</Label>
         <div className="flex flex-wrap gap-2">
-          {SOURCES.map((source) => (
+          {SOURCE_OPTIONS.map((source) => (
             <Button
               key={source.id}
               type="button"
               variant="outline"
               size="sm"
               onClick={() => toggleSource(source.id)}
+              disabled={source.id !== 'demo'}
+              aria-pressed={sources.includes(source.id)}
+              title={source.id === 'demo' ? 'Use deterministic local sample listings' : 'Not connected'}
               className={cn(
                 sources.includes(source.id) &&
-                  'border-primary bg-primary/10 text-primary'
+                  'border-primary bg-primary/10 text-primary',
+                source.id !== 'demo' && 'cursor-not-allowed opacity-50',
               )}
             >
-              {source.label}
+              {source.id === 'demo' ? source.label : `${source.label} (not connected)`}
             </Button>
           ))}
         </div>
@@ -178,7 +162,7 @@ export function ScrapeConfigForm() {
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            placeholder="e.g. San Francisco, CA"
+          placeholder="e.g. Lahore, Pakistan"
           />
         </div>
         <div className="flex items-end pb-2">
@@ -188,28 +172,28 @@ export function ScrapeConfigForm() {
               checked={remote}
               onCheckedChange={(checked) => setRemote(checked === true)}
             />
-            <Label htmlFor="remote" className="font-normal">Remote only</Label>
+            <Label htmlFor="remote" className="font-normal">Remote only (Pakistan)</Label>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label>Min Salary</Label>
+          <Label>Minimum salary (PKR/month)</Label>
           <Input
             type="number"
             value={salaryMin}
             onChange={(e) => setSalaryMin(e.target.value)}
-            placeholder="e.g. 80000"
+          placeholder="e.g. 150000"
           />
         </div>
         <div className="space-y-2">
-          <Label>Max Salary</Label>
+          <Label>Maximum salary (PKR/month)</Label>
           <Input
             type="number"
             value={salaryMax}
             onChange={(e) => setSalaryMax(e.target.value)}
-            placeholder="e.g. 150000"
+          placeholder="e.g. 250000"
           />
         </div>
       </div>
