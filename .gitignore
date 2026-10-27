@@ -39,3 +39,6 @@ supabase/.branches/
 
 # private team docs
 TEAM_CREDENTIALS.md
+
+# local planning notes
+PROJECT_*.md
