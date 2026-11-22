@@ -41,4 +41,7 @@ supabase/.branches/
 TEAM_CREDENTIALS.md
 
 # local planning notes
-PROJECT_*.md
+# Project documentation is intentionally tracked for FYP reproducibility.
+# Only ad-hoc / personal drafts are ignored:
+PROJECT_*_SCRATCH.md
+PROJECT_*_LOCAL.md
