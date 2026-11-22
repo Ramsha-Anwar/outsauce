@@ -18,12 +18,9 @@ import {
   Reply,
   CornerDownLeft,
   Inbox,
-  Filter,
   RefreshCw,
   User,
   Calendar,
-  Tag,
-  Clock,
   MailCheck,
   AlertCircle,
 } from 'lucide-react';

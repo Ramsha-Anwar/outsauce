@@ -10,7 +10,6 @@ import { Button } from "../../components/ui/button";
 import {
   Sun,
   Moon,
-  ArrowRight,
   Quote,
   ArrowLeft
 } from "lucide-react";

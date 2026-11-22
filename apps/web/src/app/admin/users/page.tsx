@@ -1,12 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { BentoCard } from '@/components/ui/bento-card';
 import { apiClient } from '@/lib/api-client';
 import {
   Table,
-  TableBody,
   TableCell,
   TableHead,
   TableHeader,
@@ -14,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Users, Mail, Shield, Calendar, Search, MoreVertical, Edit2, Trash2, UserPlus, CreditCard, X } from 'lucide-react';
+import { Users, Mail, Shield, Calendar, Search, MoreVertical, Edit2, Trash2, UserPlus } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {

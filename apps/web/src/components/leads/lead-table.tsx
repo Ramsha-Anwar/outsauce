@@ -27,12 +27,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+} 
+from '@/components/ui/dropdown-menu';
 import {
   Trash2,
   ExternalLink,

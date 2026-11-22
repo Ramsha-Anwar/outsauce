@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { BentoCard } from '@/components/ui/bento-card';
 import { apiClient } from '@/lib/api-client';
 import { Users, Activity, Sparkles, Shield, BarChart3, Mailbox, CreditCard } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface Analytics {
   totalUsers: number;

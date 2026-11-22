@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { BentoCard } from '@/components/ui/bento-card';
 import { apiClient } from '@/lib/api-client';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Search, CheckCircle2, XCircle, RefreshCw, Activity, Terminal } from 'lucide-react';
 
 interface ScrapeStats {
