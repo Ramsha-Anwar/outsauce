@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { SupabaseService } from '../../supabase/supabase.service';
 
 @Injectable()
@@ -8,7 +8,7 @@ export class ExportService {
   async exportLeads(
     userId: string,
     leadIds: string[],
-    format: 'csv' | 'json' | 'pdf',
+    format: 'csv' | 'json',
   ): Promise<{ content: string; contentType: string; filename: string }> {
     const sb = this.supabaseService.getAdminClient();
 
@@ -75,21 +75,12 @@ export class ExportService {
       };
     }
 
-    const lines = leads.map(
-      (lead, i) =>
-        `${i + 1}. ${lead.title ?? 'Untitled'}\n` +
-        `   Company: ${lead.company ?? 'N/A'}\n` +
-        `   Location: ${lead.location ?? 'N/A'}\n` +
-        `   Salary: ${lead.salary_range ?? 'N/A'}\n` +
-        `   Status: ${lead.status ?? 'N/A'}\n` +
-        `   URL: ${lead.source_url ?? 'N/A'}\n` +
-        `   Notes: ${lead.notes ?? ''}\n`,
+    // Defence in depth. The HTTP layer rejects anything except 'csv' | 'json',
+    // so this is only reachable if a future caller bypasses the DTO. It fails
+    // loudly rather than returning a file whose contents do not match its name
+    // and MIME type — which is exactly how the old "PDF" path misled callers.
+    throw new BadRequestException(
+      `Unsupported export format: ${String(format)}`,
     );
-
-    return {
-      content: `Leads Export\n${'='.repeat(40)}\n\n${lines.join('\n')}`,
-      contentType: 'text/plain',
-      filename: `leads-${timestamp}.txt`,
-    };
   }
 }

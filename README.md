@@ -184,7 +184,7 @@ outsauce/
 │   │   │       ├── scrapes/           # Scrape job management
 │   │   │       ├── webhooks/          # n8n callback route (disabled; returns 503)
 │   │   │       ├── leads/             # Lead/folder/tag CRUD
-│   │   │       ├── export/            # CSV/JSON/PDF export
+│   │   │       ├── export/            # CSV/JSON export
 │   │   │       ├── messages/          # Conversations & messaging
 │   │   │       ├── network/           # User discovery & connections
 │   │   │       ├── billing/           # Stripe subscriptions & usage
@@ -567,7 +567,7 @@ The API runs on port 3001 with a global `/api` prefix. All endpoints (except web
 #### Export (`/api/export`)
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `POST` | `/export/leads` | Export leads as CSV, JSON, or PDF |
+| `POST` | `/export/leads` | Export leads as CSV or JSON |
 
 #### Webhooks (`/api/webhooks`)
 | Method | Endpoint | Description |
@@ -609,7 +609,7 @@ The API is organized into 10 feature modules, each with its own controller and s
 | `ScrapesModule` | Demo hunt lifecycle and deterministic fixture persistence |
 | `WebhooksModule` | n8n callback route; ingestion is currently disabled |
 | `LeadsModule` | Leads, folders, tags CRUD |
-| `ExportModule` | Lead data export (CSV/JSON/PDF) |
+| `ExportModule` | Lead data export (CSV/JSON) |
 | `MessagesModule` | Conversations and real-time messaging |
 | `NetworkModule` | User discovery and connections |
 | `BillingModule` | Stripe subscriptions and usage tracking |
