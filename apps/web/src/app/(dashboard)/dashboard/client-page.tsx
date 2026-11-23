@@ -157,7 +157,7 @@ export function DashboardClient({ data }: { data: DashboardData }) {
           supabase.removeChannel(channel);
           unsubscribeAuth();
         };
-      } catch (e) {
+      } catch {
         // Fallback to polling if realtime fails
       }
     })();

@@ -104,7 +104,7 @@ export default function AdminUsersPage() {
       toast.success("User created successfully");
       setIsCreateModalOpen(false);
       fetchUsers();
-    } catch (err) {
+    } catch  {
       toast.error("Failed to create user");
     }
   };
@@ -130,7 +130,7 @@ export default function AdminUsersPage() {
       toast.success("User updated successfully");
       setIsEditModalOpen(false);
       fetchUsers();
-    } catch (err) {
+    } catch  {
       toast.error("Failed to update user");
     }
   };
@@ -144,7 +144,7 @@ export default function AdminUsersPage() {
       toast.success("User deleted permanently");
       setIsDeleteModalOpen(false);
       fetchUsers();
-    } catch (err) {
+    } catch  {
       toast.error("Failed to delete user");
     }
   };
