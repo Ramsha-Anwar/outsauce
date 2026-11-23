@@ -103,8 +103,7 @@ function timeAgo(dateStr: string): string {
 
 export function LeadTable({
   leads,
-  allTags = [],
-  onLeadsChange,
+    onLeadsChange,
 }: {
   leads: Lead[];
   allTags?: Tag[];

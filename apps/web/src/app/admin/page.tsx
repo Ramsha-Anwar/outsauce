@@ -147,7 +147,7 @@ function DashboardMetricCard({ title, value, description, icon, iconContainerCla
   );
 }
 
-function HealthMetric({ label, status, latency }: any) {
+function HealthMetric({ label, latency }: any) {
   return (
     <div className="p-4 rounded-xl bg-black/[0.02] dark:bg-white/[0.02] border border-black/[0.05] dark:border-white/[0.05] flex items-center justify-between">
       <div className="flex items-center gap-3">

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { BentoCard } from "@/components/ui/bento-card";
 import { Search, Users, Network, Sparkles, CheckCircle2, ArrowRight } from "lucide-react";
@@ -34,7 +33,6 @@ function planLabel(plan: string): string {
 }
 
 export function DashboardClient({ data }: { data: DashboardData }) {
-  const router = useRouter();
   const [metrics, setMetrics] = useState<DashboardData>(data);
 
   useEffect(() => {
@@ -55,7 +53,6 @@ export function DashboardClient({ data }: { data: DashboardData }) {
         activeHuntsRes,
         huntCountRes,
         leadCountRes,
-        aiCountRes,
         subscriptionRes,
         usageRes,
         connectionsRes,
@@ -71,10 +68,6 @@ export function DashboardClient({ data }: { data: DashboardData }) {
           .eq('user_id', user.id),
         supabase
           .from('leads')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', user.id),
-        supabase
-          .from('ai_generations')
           .select('id', { count: 'exact', head: true })
           .eq('user_id', user.id),
         supabase
@@ -97,7 +90,7 @@ export function DashboardClient({ data }: { data: DashboardData }) {
       ]);
 
       const actualLeadsCount = leadCountRes.count ?? 0;
-      const actualAiCount = aiCountRes.count ?? 0;
+      
       const usageLeads = usageRes.data?.leads_used ?? 0;
       const usageAi = usageRes.data?.ai_generations_used ?? 0;
 
