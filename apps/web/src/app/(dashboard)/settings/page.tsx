@@ -111,10 +111,11 @@ export default function SettingsPage() {
       setProfile(data);
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
-    } catch (err: any) {
+      } catch (err: unknown) {
       console.error('Failed to save profile:', err);
-      setError(err.message || 'Failed to save changes');
-    } finally {
+      const message = err instanceof Error ? err.message : 'Failed to save changes';
+      setError(message);
+      } finally {
       setSaving(false);
     }
   }
@@ -132,9 +133,10 @@ export default function SettingsPage() {
       const supabase = createClient();
       await supabase.auth.signOut();
       router.push('/');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to delete account:', err);
-      setError(err.message || 'Failed to delete account');
+      const message = err instanceof Error ? err.message : 'Failed to delete account';
+      setError(message);
       setIsDeleting(false);
     }
   }
