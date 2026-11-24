@@ -139,7 +139,16 @@ export default function AdminBillingPage() {
   );
 }
 
-function DashboardMetricCard({ title, value, description, icon, iconContainerClass, delay }: any) {
+type DashboardMetricCardProps = {
+  title: string;
+  value: string | number;
+  description: string;
+  icon: React.ReactNode;
+  iconContainerClass?: string;
+  delay?: number;
+};
+
+function DashboardMetricCard({ title, value, description, icon, iconContainerClass, delay }: DashboardMetricCardProps) {
   return (
     <BentoCard delay={delay} className="p-6 relative group overflow-hidden border-none shadow-2xl">
       <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-current to-transparent opacity-[0.03] rounded-full blur-2xl group-hover:opacity-10 transition-opacity duration-500" style={{ color: 'inherit' }} />
