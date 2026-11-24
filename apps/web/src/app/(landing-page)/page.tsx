@@ -349,7 +349,7 @@ export default function LandingPage() {
             className="text-center mb-12"
           >
             <h2 className="text-3xl font-bold tracking-tight text-text-main mb-3">
-              Everything you need. Nothing you don't.
+              Everything you need. Nothing you don&apos;t.
             </h2>
             <p className="text-lg text-text-muted">
               A comprehensive toolkit engineered for modern professionals.
@@ -409,7 +409,7 @@ export default function LandingPage() {
               Built for every kind of hustle.
             </h2>
             <p className="text-lg text-text-muted max-w-2xl mx-auto">
-              Whether you're finding your next gig, or sourcing the perfect candidate.
+              Whether you&apos;re finding your next gig, or sourcing the perfect candidate.
             </p>
           </motion.div>
           <motion.div

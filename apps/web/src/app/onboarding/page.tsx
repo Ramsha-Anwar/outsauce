@@ -182,7 +182,7 @@ export default function OnboardingPage() {
                           Welcome to Outsauce 👋
                         </h1>
                         <p className="mt-1 text-sm text-muted-foreground">
-                          Let's set up your profile in just a few quick steps.
+                          Let&apos;s set up your profile in just a few quick steps.
                         </p>
                       </div>
                       <div className="space-y-2">

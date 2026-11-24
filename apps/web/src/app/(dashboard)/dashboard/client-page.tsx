@@ -189,7 +189,7 @@ export function DashboardClient({ data }: { data: DashboardData }) {
           Welcome back{metrics.userName ? `, ${metrics.userName}` : ''}
         </h1>
         <p className="mt-2 text-base text-text-muted">
-          Here is what's happening with your account today.
+          Here is what&apos;s happening with your account today.
         </p>
       </motion.div>
 

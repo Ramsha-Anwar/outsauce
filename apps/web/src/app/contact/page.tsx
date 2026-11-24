@@ -87,7 +87,7 @@ export default function ContactPage() {
         >
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-text-main mb-6">Get in touch</h1>
           <p className="text-xl text-text-muted font-medium max-w-2xl">
-            Have a question, feedback, or need support? We'd love to hear from you. Drop us a message below.
+            Have a question, feedback, or need support? We&apos;d love to hear from you. Drop us a message below.
           </p>
         </motion.div>
       </header>
