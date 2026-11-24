@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import { createRealtimeAuthedClient } from '@/lib/supabase/realtime';
 
 type ScrapeStatus = 'pending' | 'running' | 'completed' | 'failed' | 'cancelled';
@@ -41,7 +42,7 @@ export function useRealtimeScrape(jobId: string | null) {
             table: 'scrape_jobs',
             filter: `id=eq.${jobId}`,
           },
-          (payload: any) => {
+          (payload: RealtimePostgresChangesPayload<ScrapeJobUpdate>) => {
             const updated = payload.new as ScrapeJobUpdate;
             setStatus(updated.status);
             setResultCount(updated.result_count);

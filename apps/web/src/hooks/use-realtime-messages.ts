@@ -12,6 +12,8 @@ interface Message {
   created_at: string;
 }
 
+type BroadcastEventData = { payload?: Message };
+
 export function useRealtimeMessages(conversationId: string | null) {
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -28,9 +30,9 @@ export function useRealtimeMessages(conversationId: string | null) {
     const supabase = createClient();
     const channel = supabase
       .channel(`conversation:${conversationId}`)
-      .on('broadcast', { event: 'new_message' }, (eventData: any) => {
+      .on('broadcast', { event: 'new_message' }, (eventData: BroadcastEventData) => {
         if (eventData?.payload) {
-          addMessage(eventData.payload as Message);
+          addMessage(eventData.payload);
         }
       })
       .subscribe();
