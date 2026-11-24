@@ -156,8 +156,9 @@ export default function AiToolsPage() {
 
       setOutput(res.message);
       toast.success('Outreach message generated!');
-    } catch (err: any) {
-      toast.error(err?.message || 'Failed to generate outreach message');
+       } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to generate outreach message';
+      toast.error(message);
     } finally {
       setGenerating(false);
     }
@@ -183,8 +184,9 @@ export default function AiToolsPage() {
         }),
       });
       setOutput(result.output_text);
-    } catch (err: any) {
-      toast.error(err?.message || 'Failed to generate content');
+        } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to generate content';
+      toast.error(message);
     } finally {
       setGenerating(false);
     }

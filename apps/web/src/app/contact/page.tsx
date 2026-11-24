@@ -48,12 +48,13 @@ export default function ContactPage() {
 
       supabase.functions
         .invoke('send-contact-email', { body: { name: fullName, email, message } })
-        .catch((fnErr: unknown) =>
-          console.warn('[Contact] Edge fn notification skipped:', (fnErr as any)?.message),
-        );
+        .catch((fnErr: unknown) => {
+          const errMsg = fnErr instanceof Error ? fnErr.message : String(fnErr);
+          console.warn('[Contact] Edge fn notification skipped:', errMsg);
+        });
 
       setIsSubmitted(true);
-    } catch (err: any) {
+      } catch (err: unknown) {
       console.error('Error sending message:', err);
       alert('Failed to send message. Please try again later.');
     } finally {
