@@ -223,12 +223,12 @@ export default function LearnMorePage() {
               <div className="my-10 p-8 rounded-3xl bg-white/80 dark:bg-white/[0.03] border border-black/10 dark:border-white/10 shadow-lg relative overflow-hidden backdrop-blur-md">
                 <Quote className="absolute top-4 left-4 h-24 w-24 text-black/5 dark:text-white/5 -z-10 transform -rotate-12" />
                 <p className="text-xl md:text-2xl font-bold text-text-main leading-snug italic relative z-10">
-                  "Professionals are spending 60% of their time searching for work, and only 40% actually doing it. The system isn't designed for efficiency; it's designed to keep you on their platforms."
+                  &quot;Professionals are spending 60% of their time searching for work, and only 40% actually doing it. The system isn&apos;t designed for efficiency; it&apos;s designed to keep you on their platforms.&quot;
                 </p>
               </div>
 
               <p className="text-lg text-text-muted leading-relaxed mb-6 font-medium">
-                We realized that the solution wasn't to build another job board. The solution was to build an aggregation engine that brings the entire internet to your dashboard. Outsauce was created to automate the painful, repetitive task of opportunity discovery.
+                We realized that the solution wasn&apos;t to build another job board. The solution was to build an aggregation engine that brings the entire internet to your dashboard. Outsauce was created to automate the painful, repetitive task of opportunity discovery.
               </p>
             </section>
 
@@ -277,7 +277,7 @@ export default function LearnMorePage() {
                 Finding the lead is only 10% of the battle. Organizing, tracking, and following up dictates your actual conversion rate. Historically, freelancers and recruiters default to Excel or Notion—static grids that require manual maintenance.
               </p>
               <p className="text-lg text-text-muted leading-relaxed mb-6 font-medium">
-                Outsauce introduces a deeply integrated <strong>Visual CRM</strong>. When an interesting gig flows in from the hunter, one click saves it to your database as a "Lead."
+                Outsauce introduces a deeply integrated <strong>Visual CRM</strong>. When an interesting gig flows in from the hunter, one click saves it to your database as a &quot;Lead.&quot;
               </p>
 
               <ul className="space-y-4 mb-8 text-lg text-text-muted font-medium list-none p-0">
@@ -297,7 +297,7 @@ export default function LearnMorePage() {
                   <div className="h-6 w-6 mt-1 rounded-full bg-brand-red/20 flex items-center justify-center flex-shrink-0">
                     <div className="h-2 w-2 rounded-full bg-brand-red"></div>
                   </div>
-                  <span><strong>Analytics:</strong> Because it's stored in a structured PostgreSQL database, we can provide actual insights into your application-to-hire ratio.</span>
+                  <span><strong>Analytics:</strong> Because it&apos;s stored in a structured PostgreSQL database, we can provide actual insights into your application-to-hire ratio.</span>
                 </li>
               </ul>
             </section>
@@ -308,16 +308,16 @@ export default function LearnMorePage() {
                 The biggest bottleneck in securing high-quality work is the application process itself. Generic cover letters are instantly rejected by clients and ATS systems alike. Crafting a hyper-personalized response for every gig is mentally exhausting.
               </p>
               <p className="text-lg text-text-muted leading-relaxed mb-8 font-medium">
-                The repository contains optional AI-writing endpoints that use a configured third-party model provider. The demo hunt and its sample records do not call those endpoints, and AI ranking is not enabled. Provider usage may incur charges, so it must remain disabled under the project's $0 budget unless a verified no-cost path is implemented.
+                The repository contains optional AI-writing endpoints that use a configured third-party model provider. The demo hunt and its sample records do not call those endpoints, and AI ranking is not enabled. Provider usage may incur charges, so it must remain disabled under the project&apos;s $0 budget unless a verified no-cost path is implemented.
               </p>
 
               <div className="bg-white/80 dark:bg-black/50 border border-black/10 dark:border-white/10 rounded-2xl p-6 mb-8 font-mono text-sm text-text-main backdrop-blur-md">
-                <span className="text-text-muted block mb-2">// The payload sent to the LLM</span>
+                <span className="text-text-muted block mb-2">{"//"} The payload sent to the LLM</span>
                 {`{`} <br/>
-                &nbsp;&nbsp;<span className="text-blue-500">"target_role"</span>: <span className="text-emerald-500">"Senior Next.js Developer"</span>, <br/>
-                &nbsp;&nbsp;<span className="text-blue-500">"platform_tone"</span>: <span className="text-emerald-500">"Upwork (Direct, Results-Oriented)"</span>, <br/>
-                &nbsp;&nbsp;<span className="text-blue-500">"user_profile"</span>: <span className="text-purple-500">UserSkillsArray</span>, <br/>
-                &nbsp;&nbsp;<span className="text-blue-500">"job_description"</span>: <span className="text-purple-500">HuntedGigText</span> <br/>
+                &nbsp;&nbsp;<span className="text-blue-500">&quot;target_role&quot;</span>: <span className="text-emerald-500">&quot;Senior Next.js Developer&quot;</span>, <br/>
+                &nbsp;&nbsp;<span className="text-blue-500">&quot;platform_tone&quot;</span>: <span className="text-emerald-500">&quot;Upwork (Direct, Results-Oriented)&quot;</span>, <br/>
+                &nbsp;&nbsp;<span className="text-blue-500">&quot;user_profile&quot;</span>: <span className="text-purple-500">UserSkillsArray</span>, <br/>
+                &nbsp;&nbsp;<span className="text-blue-500">&quot;job_description&quot;</span>: <span className="text-purple-500">HuntedGigText</span> <br/>
                 {`}`}
               </div>
 
