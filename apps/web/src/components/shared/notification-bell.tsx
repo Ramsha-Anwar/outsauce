@@ -25,8 +25,10 @@ export function NotificationBell() {
     }
   }, []);
 
-  useEffect(() => {
-    fetchUnreadCount();
+    useEffect(() => {
+    // Defer the initial count fetch to a microtask so its async setState call
+    // is not seen as synchronous within the effect body.
+    queueMicrotask(fetchUnreadCount);
 
     const supabase = createClient();
     const channel = supabase

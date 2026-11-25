@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useSyncExternalStore } from "react";
 import { motion, useScroll } from "framer-motion";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -14,15 +14,21 @@ import {
   ArrowLeft
 } from "lucide-react";
 
+function useMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
 export default function LearnMorePage() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const { scrollYProgress } = useScroll();
   const [activeSection, setActiveSection] = useState("the-broken-market");
 
   useEffect(() => {
-    setMounted(true);
-
     const handleScroll = () => {
       const sections = ["the-broken-market", "the-architecture", "the-visual-crm", "the-ai-edge", "the-network-effect"];
       let currentSection = sections[0];

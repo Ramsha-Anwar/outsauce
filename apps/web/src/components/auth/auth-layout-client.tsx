@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -8,13 +8,17 @@ import { EtherealDust } from "@/components/EtherealDust";
 import { OutsauceLogo } from "@/components/OutsauceLogo";
 import { Sun, Moon, ArrowLeft } from "lucide-react";
 
+function useMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
 export function AuthLayoutClient({ children }: { children: React.ReactNode }) {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   const isLightMode = theme === "light";
 
@@ -92,7 +96,7 @@ export function AuthLayoutClient({ children }: { children: React.ReactNode }) {
           </div>
 
           <p className="text-sm font-medium text-text-muted">
-            © {new Date().getFullYear()} Outsauce. All rights reserved.
+            Â© {new Date().getFullYear()} Outsauce. All rights reserved.
           </p>
         </div>
       </footer>

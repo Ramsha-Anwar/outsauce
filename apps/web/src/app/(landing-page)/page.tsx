@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useSyncExternalStore } from "react";
 import { motion, useScroll, AnimatePresence } from "framer-motion";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -28,6 +28,14 @@ import {
   Menu,
   X
 } from "lucide-react";
+
+function useMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
 
 const fadeIn = {
   hidden: { opacity: 0, y: 30 },
@@ -179,13 +187,9 @@ const FAQItem = ({ question, answer }: { question: string, answer: string }) => 
 
 export default function LandingPage() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const { scrollYProgress } = useScroll();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const isLightMode = theme === "light";
 

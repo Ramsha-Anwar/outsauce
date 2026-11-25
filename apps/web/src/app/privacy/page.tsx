@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
 import { useTheme } from "next-themes";
 import Link from "next/link";
@@ -9,13 +9,17 @@ import { OutsauceLogo } from "../../components/OutsauceLogo";
 import { Button } from "../../components/ui/button";
 import { ArrowLeft } from "lucide-react";
 
+function useMounted() {
+  return useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false,
+  );
+}
+
 export default function PrivacyPage() {
   const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   const isLightMode = theme === "light";
 
@@ -43,8 +47,7 @@ export default function PrivacyPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-text-main mb-6">Privacy Policy</h1>
-          <p className="text-xl text-text-muted font-medium">Last updated: {new Date().toLocaleDateString()}</p>
-        </motion.div>
+          <p className="text-xl text-text-muted font-medium">Last updated: {new Date().toLocaleDateString()}</p>        </motion.div>
       </header>
 
       <main className="relative z-10 max-w-4xl mx-auto px-6 pb-24 w-full flex-1">
@@ -86,7 +89,7 @@ export default function PrivacyPage() {
       <footer className="border-t border-black/[0.08] dark:border-white/[0.08] relative z-10 bg-bg-main-light/80 dark:bg-brand-navy/80 backdrop-blur-lg mt-auto">
         <div className="max-w-4xl mx-auto px-6 py-10 flex flex-col md:flex-row justify-between items-center gap-6">
           <OutsauceLogo className="h-6" />
-          <p className="text-sm text-text-muted">© {new Date().getFullYear()} Outsauce. All rights reserved.</p>
+          <p className="text-sm text-text-muted">Â© {new Date().getFullYear()} Outsauce. All rights reserved.</p>
         </div>
       </footer>
     </div>

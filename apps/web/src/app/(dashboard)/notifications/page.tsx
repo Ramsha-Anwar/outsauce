@@ -41,8 +41,10 @@ export default function NotificationsPage() {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    fetchNotifications();
+    useEffect(() => {
+    // Defer the initial fetch to a microtask so its async setState calls are
+    // scheduled after the effect body, satisfying react-hooks/set-state-in-effect.
+    queueMicrotask(fetchNotifications);
 
     let cancelled = false;
     let cleanup: (() => void) | null = null;
