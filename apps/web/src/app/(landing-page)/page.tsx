@@ -47,8 +47,17 @@ const staggerContainer = {
 };
 
 
-const PricingCard = ({ plan, description, price, features, buttonText, recommended, className }: any) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+type PricingCardProps = {
+  plan: string;
+  description: string;
+  price: string;
+  features: string[];
+  buttonText: string;
+  recommended?: boolean;
+  className?: string;
+};
+
+const PricingCard = ({ plan, description, price, features, buttonText, recommended, className }: PricingCardProps) => {  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -98,8 +107,14 @@ const PricingCard = ({ plan, description, price, features, buttonText, recommend
   );
 };
 
-const BentoCard = ({ title, description, icon: Icon, className = "" }: any) => {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+type LandingBentoCardProps = {
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  className?: string;
+};
+
+const BentoCard = ({ title, description, icon: Icon, className = "" }: LandingBentoCardProps) => {  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();

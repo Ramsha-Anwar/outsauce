@@ -286,8 +286,16 @@ export function DashboardClient({ data }: { data: DashboardData }) {
   );
 }
 
-function DashboardMetricCard({ title, value, description, icon, iconContainerClass, delay }: any) {
-  return (
+type DashboardMetricCardProps = {
+  title: string;
+  value: string | number;
+  description: string;
+  icon: React.ReactNode;
+  iconContainerClass?: string;
+  delay?: number;
+};
+
+function DashboardMetricCard({ title, value, description, icon, iconContainerClass, delay }: DashboardMetricCardProps) {  return (
     <BentoCard delay={delay} className="p-6 relative group overflow-hidden">
       <div className="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-current to-transparent opacity-[0.03] rounded-full blur-2xl group-hover:opacity-10 transition-opacity duration-500" style={{ color: 'inherit' }} />
       <div className="flex items-center justify-between mb-4 relative z-10">
@@ -304,7 +312,15 @@ function DashboardMetricCard({ title, value, description, icon, iconContainerCla
   );
 }
 
-function Step({ number, title, description, isCompleted, href }: any) {
+type StepProps = {
+  number: number;
+  title: string;
+  description: string;
+  isCompleted: boolean;
+  href?: string;
+};
+
+function Step({ number, title, description, isCompleted, href }: StepProps) {
   const content = (
     <div className={`group flex items-start gap-4 ${href ? 'cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 p-3 -m-3 rounded-xl transition-colors' : ''}`}>
       <div className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border transition-all duration-300 shadow-sm ${
@@ -331,7 +347,13 @@ function Step({ number, title, description, isCompleted, href }: any) {
   return content;
 }
 
-function ActionButton({ label, icon, href }: any) {
+type ActionButtonProps = {
+  label: string;
+  icon: React.ReactNode;
+  href?: string;
+};
+
+function ActionButton({ label, icon, href }: ActionButtonProps) {
   const content = (
     <button className="flex items-center gap-3 w-full p-3.5 rounded-xl bg-white/40 dark:bg-white/[0.02] hover:bg-white/80 dark:hover:bg-white/[0.06] border border-white/50 dark:border-white/5 hover:border-brand-red/30 dark:hover:border-brand-red/40 shadow-sm transition-all duration-300 text-left group">
       <div className="p-2 rounded-lg bg-black/[0.03] dark:bg-white/5 text-text-muted group-hover:bg-brand-red group-hover:text-white group-hover:shadow-[0_0_15px_rgba(196,30,30,0.4)] transition-all duration-300">
