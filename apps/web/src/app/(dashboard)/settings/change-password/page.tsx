@@ -51,9 +51,10 @@ export default function ChangePasswordPage() {
       setTimeout(() => {
         router.push('/settings');
       }, 2000);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to change password:', err);
-      setError(err.message || 'Failed to change password');
+      const message = err instanceof Error ? err.message : 'Failed to change password';
+      setError(message);
     } finally {
       setSaving(false);
     }
