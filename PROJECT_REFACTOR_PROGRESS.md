@@ -1,6 +1,6 @@
 # Outsauce Refactor Progress Tracker
 
-**Last updated:** 2026-11-22  
+**Last updated:** 2026-11-25  
 **Overall status:** Implementation status remains as last evidenced on 2026-10-27: M1 / PR-01 (demo-only hunts) and PR-01B (P1-09–P1-11 contract fixes) are implemented and locally verified. PR-01 documentation cleanup (SYNOPSIS) and the pre-existing web lint baseline (61 errors / 29 warnings, deferred to PR-01C) remain open. This revision aligns ownership and sequencing with the revised execution plan; it does not record new code work or verification.  
 **Budget constraint:** $0 out-of-pocket. No paid Actor runs, model/API usage, proxies, hosting, storage, or workflow upgrades; free allowances are usable only with hard spend caps and no overage/auto-upgrade.  
 **Source of truth for fixes:** [`PROJECT_REFACTOR_FIX_PLAN.md`](PROJECT_REFACTOR_FIX_PLAN.md)  
@@ -136,7 +136,7 @@
 | P6-06 | Update README, synopsis, deployment docs, UI labels, architecture/data-flow diagrams, and demo to match code. | P1 | Not started | Claims mapped to implemented/external/demo/planned status. |
 | P6-07 | Complete user/problem validation, FYP evaluation, results, limitations, and ethics/privacy discussion. | P1 | Not started | Final report artifacts linked below. |
 | P6-08 | Prepare resume bullets and interview demo only from verified features/results. | P2 | Not started | Resume statements checked against evidence/metrics. |
-| P6-09 | Clear the web lint baseline (61 errors / 29 warnings → 0/0) without behaviour change. | P2 | Not started | `pnpm --filter @outsauce/web lint` must return 0/0; web build and API tests must still pass. |
+| P6-09 | Clear the web lint baseline (61 errors / 29 warnings → 0/0) without behaviour change. | P2 | Done | All 12 commits from R1 to R5 leftover pushed (`4d2fbcb` → `a3c4825`). Verified 2026-11-25: `pnpm --filter @outsauce/web lint` → 0 problems (0 errors, 0 warnings); `pnpm --filter @outsauce/api test` → 6 suites / 23 tests pass; `pnpm --filter @outsauce/api test:e2e` → 1 suite / 2 tests pass; `pnpm --filter @outsauce/web build` → 34 routes pass with TypeScript clean. |
 ## Open decisions / dependencies
 
 Update this list when decisions are made; do not treat unresolved scope as implemented work.
@@ -213,6 +213,10 @@ Record commands/checks and outcomes. Include environment (local/CI), date, and l
 | 2026-10-27 | M1 / PR-01B | `POST /api/export/leads` with `format: "pdf"` | `400` — “format: Invalid enum value. Expected 'csv' \| 'json', received 'pdf'”. | Fake PDF claim removed at the API boundary. |
 | 2026-10-27 | M1 / PR-01B | `POST /api/export/leads` with `format: "csv"` and `"json"` for a real lead | CSV `201`, `text/csv`, `.csv` filename, comma and newline correctly quoted; JSON `201`, `application/json`, `.json` filename. | Regression check after deleting the text fallback. Test lead deleted afterwards. |
 | 2026-10-27 | M1 / PR-01B | Live `GET /api/health` and `GET /` | `200` `{status:'ok',timestamp}`; `404`. | Matches the new e2e contract. |
+| 2026-11-25 | M1 / P6-09 | `pnpm --filter @outsauce/web lint` | Passed: **0 problems (0 errors, 0 warnings)**. | Baseline was 61 errors / 29 warnings on 2026-10-27. Cleared across R1–R6 in 12 commits: `4d2fbcb`, `8f46d0a`, `39b6533`, `bd0202b`, `d6741f9`, `c11ad0b`, `ddfe417`, `ffd5134`, `c52c08c`, `c858878`, `6f06923`, `a3c4825`. |
+| 2026-11-25 | M1 / P6-09 | `pnpm --filter @outsauce/api test -- --runInBand` | Passed: 6 suites, 23 tests. | No regressions from web lint changes. |
+| 2026-11-25 | M1 / P6-09 | `pnpm --filter @outsauce/api test:e2e` | Passed: 1 suite, 2 tests. | Health/404 contract still intact. |
+| 2026-11-25 | M1 / P6-09 | `pnpm --filter @outsauce/web build` | Passed: compiled, TypeScript clean, 34 routes generated. | `.env.local` present; no prerender issue. |
 
 ### Manual checks for M1 / PR-01 — completed 2026-10-27
 
@@ -252,6 +256,7 @@ Use JSON files for request bodies on PowerShell; inline quoting corrupted the pa
 | 2026-10-27 | Completed M1 / PR-01B: added forward migration `20261027000003_add_outreach_tool_type.sql` (P1-09), removed the fake PDF contract and its text fallback plus README claims (P1-10), and replaced the stale `GET /` e2e with the real health/404 contract (P1-11). API tests 6 suites/23 tests, API build, and e2e 2 tests pass; clean `db reset` applies all 19 migrations; live checks confirmed pdf → 400, csv/json → 201, health → 200, root → 404. Marked P1-09–P1-11 `Done`. Web lint (61 errors / 29 warnings) deferred to PR-01C; no commits or pushes were made. |
 | 2026-11-21 | Aligned this tracker with the revised execution plan: clarified PR-02/PR-07 callback-versus-worker ownership, PR-06/PR-08 discovery-versus-user-actions ownership, and PR-07/PR-09 minimum-versus-broader Admin ownership. Added the PR ownership ledger and source GO/NO-GO gate. No repository implementation, tests, commits, or deployment were performed as part of this documentation update; all work-item statuses and evidence remain as last recorded on 2026-10-27. |
 | 2026-11-22 | Recorded P1-12 (dependency vulnerability triage) and P6-09 (web lint cleanup, PR-01C). PR-01C to be done before PR-02. |
+| 2026-11-25 | Completed M1 / P6-09 (PR-01C): web lint baseline cleared from 61 errors / 29 warnings to 0/0 across 6 rounds and 12 commits (R1 `4d2fbcb` → R5 leftover `a3c4825`). No feature/behaviour changes; all API tests, e2e, and web build still pass. Marked P6-09 `Done`. |
 
 ## How to update this tracker
 
