@@ -4,6 +4,18 @@ export type { Lead, LeadFolder, Tag, LeadStatus } from './types/lead';
 export type { Conversation, ConversationParticipant, Message, MessageStatus } from './types/message';
 export type { Subscription, Usage, PlanLimits, PlanTier } from './types/billing';
 export type { Connection, ConnectionStatus } from './types/network';
+export type {
+  NormalizedOpportunity,
+  OpportunityStatus,
+  WorkMode,
+  EmploymentType,
+  SalaryPeriod,
+  SearchCriteria,
+  SourcePage,
+  SourceResult,
+  SourceError,
+  OpportunitySourceAdapter,
+} from './types/opportunity';
 
 export { onboardingSchema, updateProfileSchema } from './schemas/profile.schema';
 export type { OnboardingInput, UpdateProfileInput } from './schemas/profile.schema';
