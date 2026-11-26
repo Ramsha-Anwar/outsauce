@@ -1,6 +1,6 @@
 # Outsauce Refactor Progress Tracker
 
-**Last updated:** 2026-11-25  
+**Last updated:** 2026-11-26  
 **Overall status:** Implementation status remains as last evidenced on 2026-10-27: M1 / PR-01 (demo-only hunts) and PR-01B (P1-09–P1-11 contract fixes) are implemented and locally verified. PR-01 documentation cleanup (SYNOPSIS) and the pre-existing web lint baseline (61 errors / 29 warnings, deferred to PR-01C) remain open. This revision aligns ownership and sequencing with the revised execution plan; it does not record new code work or verification.  
 **Budget constraint:** $0 out-of-pocket. No paid Actor runs, model/API usage, proxies, hosting, storage, or workflow upgrades; free allowances are usable only with hard spend caps and no overage/auto-upgrade.  
 **Source of truth for fixes:** [`PROJECT_REFACTOR_FIX_PLAN.md`](PROJECT_REFACTOR_FIX_PLAN.md)  
@@ -53,7 +53,7 @@
 |---|---|---:|---|---|
 | P0-01 | Confirm the FYP problem statement and primary user requirements with target job seekers. | P0 | Not started | Record interview/survey method, findings, and resulting requirements. |
 | P0-02 | Define initial job categories, geography/work modes, and which profile fields influence matching. | P0 | Not started | Approved scope and acceptance criteria; keep profile-driven matching bounded by available data. |
-| P0-03 | Choose initial source(s); document access method, permission/policy review, fields, refresh schedule, and retention. | P0 | Not started | Source register with a reproducible test path. |
+| P0-03 | Choose initial source(s); document access method, permission/policy review, fields, refresh schedule, and retention. | P0 | Done | `docs/SOURCES.md` committed (`05aa70f`) with two verified GO decisions: Himalayas (`himalayas.app/jobs/api/search`) and SkillzDunya (`skillzdunya.com/api/v1/jobs`). Both verified 2026-11-26: HTTP 200, `application/json`, no API key. Rate limits, allowed fields, attribution, retention, and sync frequency documented per source. Rozee.pk and Mustakbil explicitly NO-GO. |
 | P0-04 | Decide which existing features remain in the FYP core versus deferred (employer, freelancer, networking, chat, Stripe, generic AI writing). | P1 | Not started | Scope decision recorded in this file and reflected in project docs/UI. |
 | P0-05 | Approve the FYP research question, labeled-data approach, metrics, and user evaluation plan. | P1 | Not started | Protocol written before tuning the AI ranker. |
 | P0-06 | Confirm migration ownership: SQL migrations remain canonical initially; decide how Drizzle schema/query code will stay aligned. | P1 | Not started | Architecture decision record plus clean migration verification plan. |
@@ -217,6 +217,9 @@ Record commands/checks and outcomes. Include environment (local/CI), date, and l
 | 2026-11-25 | M1 / P6-09 | `pnpm --filter @outsauce/api test -- --runInBand` | Passed: 6 suites, 23 tests. | No regressions from web lint changes. |
 | 2026-11-25 | M1 / P6-09 | `pnpm --filter @outsauce/api test:e2e` | Passed: 1 suite, 2 tests. | Health/404 contract still intact. |
 | 2026-11-25 | M1 / P6-09 | `pnpm --filter @outsauce/web build` | Passed: compiled, TypeScript clean, 34 routes generated. | `.env.local` present; no prerender issue. |
+| 2026-11-26 | M1 / P0-03 | `Invoke-WebRequest https://himalayas.app/jobs/api/search?q=react&limit=3` | **200**, `application/json`, 4005 "react" jobs, full field set (salary, seniority, locationRestrictions, timezoneRestrictions, categories). | Himalayas GO decision recorded in `docs/SOURCES.md`. |
+| 2026-11-26 | M1 / P0-03 | `Invoke-WebRequest https://skillzdunya.com/api/v1/jobs?per_page=2` | **200**, `application/json`, 2 full job objects with `url`, `source_url`, `apply_url`, `deadline`, `is_expired`. | SkillzDunya GO decision recorded in `docs/SOURCES.md`. |
+| 2026-11-26 | M1 / P0-03 | Source register review | `docs/SOURCES.md` covers both approved sources (Himalayas, SkillzDunya) with rate limits, fields, attribution, retention, sync frequency, and explicit NO-GO for Rozee.pk / Mustakbil. | P0-03 marked Done. |
 
 ### Manual checks for M1 / PR-01 — completed 2026-10-27
 
@@ -257,6 +260,7 @@ Use JSON files for request bodies on PowerShell; inline quoting corrupted the pa
 | 2026-11-21 | Aligned this tracker with the revised execution plan: clarified PR-02/PR-07 callback-versus-worker ownership, PR-06/PR-08 discovery-versus-user-actions ownership, and PR-07/PR-09 minimum-versus-broader Admin ownership. Added the PR ownership ledger and source GO/NO-GO gate. No repository implementation, tests, commits, or deployment were performed as part of this documentation update; all work-item statuses and evidence remain as last recorded on 2026-10-27. |
 | 2026-11-22 | Recorded P1-12 (dependency vulnerability triage) and P6-09 (web lint cleanup, PR-01C). PR-01C to be done before PR-02. |
 | 2026-11-25 | Completed M1 / P6-09 (PR-01C): web lint baseline cleared from 61 errors / 29 warnings to 0/0 across 6 rounds and 12 commits (R1 `4d2fbcb` → R5 leftover `a3c4825`). No feature/behaviour changes; all API tests, e2e, and web build still pass. Marked P6-09 `Done`. |
+| 2026-11-26 | Completed M1 / P0-03: created and committed `docs/SOURCES.md` (`05aa70f`) with GO decisions for Himalayas Remote Jobs API (primary, tech-focused) and SkillzDunya Jobs API (Pakistan). Both verified live 2026-11-26. Rozee.pk and Mustakbil documented as NO-GO. PR-06 source gate is now satisfied. |
 
 ## How to update this tracker
 
