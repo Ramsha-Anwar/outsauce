@@ -140,8 +140,8 @@ interface OpportunitySourceAdapter {
 | Normalized field | Himalayas source | Transform |
 |---|---|---|
 | `sourceKey` | — | Constant `'himalayas'` |
-| `externalId` | `guid` **or** `companySlug + '/' + slug` **or** hash of `sourceUrl` | **Verify in adapter implementation** — sample did not show an explicit per-job ID. Prefer explicit `guid` if present. |
-| `sourceUrl` | Constructed: `https://himalayas.app/companies/{companySlug}/jobs/{slug}` | **Verify URL pattern against live API** |
+| `externalId` | `guid` | **Confirmed 2026-11-26** — `guid` present, canonical URL string. Direct use. |
+| `sourceUrl` | `guid` | **Confirmed 2026-11-26** — `guid` is already the canonical URL. No construction. |
 | `title` | `title` | Direct |
 | `companyName` | `companyName` | Direct |
 | `location` | Derived from `locationRestrictions` | See derivation table below |
@@ -156,9 +156,9 @@ interface OpportunitySourceAdapter {
 | `salaryPeriod` | `salaryPeriod` | Direct (`'annual'` observed) |
 | `descriptionExcerpt` | `excerpt` | Direct |
 | `status` | Derived: `last_seen_at` within 14 days → `'open'`; else `'stale'` | Computed at persistence time |
-| `publishedAt` | `null` — Himalayas does not expose per-job publish date | `null` — explicitly unknown |
+| `publishedAt` | `pubDate` (Unix seconds) | `new Date(pubDate * 1000).toISOString()` — **confirmed 2026-11-26** |
 | `deadline` | `null` — not exposed | `null` |
-| `applyUrl` | `null` — apply happens via Himalayas listing | `null` |
+| `applyUrl` | `applicationLink` | **Confirmed 2026-11-26** — Himalayas URL with `?utm_source=api` tracking. Direct use. |
 
 **`location` derivation (display string only — full list goes to `remoteRegions`):**
 
