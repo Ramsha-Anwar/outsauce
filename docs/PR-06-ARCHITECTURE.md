@@ -59,6 +59,9 @@ interface NormalizedOpportunity {
   seniority: string | null;
   categories: string[];          // free-form tags/categories from source
 
+  // Eligibility (profile-aware matching)
+  remoteRegions: string[];       // all countries/regions this role accepts, normalized labels; empty = unknown/global
+
   // Compensation
   salaryMin: number | null;
   salaryMax: number | null;
@@ -79,6 +82,8 @@ interface NormalizedOpportunity {
 ```
 
 **Rule:** if the source does not provide a field, it is `null` or `'unknown'`. Never inferred, never fabricated. This is the product-integrity rule from `PROJECT_MASTER_PROJECT_PROMPT.md` §6.
+
+**Note on `remoteRegions`:** this is the full eligibility list, not a display string. `location` stays a human-friendly summary for UI; `remoteRegions` is the filterable, profile-aware signal (e.g., "is this job open to Pakistan?"). Empty array means the source did not expose region restrictions — treat as "unknown", not as "worldwide".
 
 ### 3.2 Adapter interface
 
@@ -139,7 +144,8 @@ interface OpportunitySourceAdapter {
 | `sourceUrl` | Constructed: `https://himalayas.app/companies/{companySlug}/jobs/{slug}` | **Verify URL pattern against live API** |
 | `title` | `title` | Direct |
 | `companyName` | `companyName` | Direct |
-| `location` | `locationRestrictions[0]` (or `'Remote'` if list length > 0) | First restriction, or `'Remote'` if length ≥ 1 |
+| `location` | Derived from `locationRestrictions` | See derivation table below |
+| `remoteRegions` | `locationRestrictions` | **Direct copy of full array** (normalized to string labels). Do not truncate to first element — this is the profile-matching signal. Empty array if field absent. |
 | `workMode` | — | Constant `'remote'` — the Himalayas dataset is remote-only |
 | `employmentType` | `employmentType` | Map: `'Full Time'` → `'full_time'`, `'Part Time'` → `'part_time'`, `'Contract'` → `'contract'`, `'Internship'` → `'internship'` |
 | `seniority` | `seniority[0]` | First entry |
@@ -154,6 +160,16 @@ interface OpportunitySourceAdapter {
 | `deadline` | `null` — not exposed | `null` |
 | `applyUrl` | `null` — apply happens via Himalayas listing | `null` |
 
+**`location` derivation (display string only — full list goes to `remoteRegions`):**
+
+| `locationRestrictions.length` | `location` value | Example |
+|---|---|---|
+| `0` (empty / absent) | `'Remote'` | `'Remote'` |
+| `1` | `locationRestrictions[0]` | `'Pakistan'` |
+| `2+` | `'Remote (N countries)'` | `'Remote (77 countries)'` |
+
+Rationale: `location` is a UI display field. The full list of 77 countries would blow up the UI and break filtering. Eligibility filtering is done against `remoteRegions`, not `location`.
+
 **Rate-limit strategy:** Himalayas does not document a request rate, only 20 results per page. Adapter throttles to **1 request per 2 seconds** as a safety margin. No concurrent requests.
 
 **Pagination:** `?page=N` with `offset`, `limit`, `totalCount` in response. Stop when `offset + limit >= totalCount`.
@@ -162,6 +178,7 @@ interface OpportunitySourceAdapter {
 - Is there a per-job `guid`, `id`, or `slug` field?
 - Is `https://himalayas.app/companies/{companySlug}/jobs/{slug}` the correct canonical URL pattern?
 - What is the exact field name for the per-job path segment?
+- Are `locationRestrictions` entries plain country names, ISO codes, or objects? Normalization must adapt.
 
 ### 4.2 SkillzDunya (`skillzdunya.com/api/v1/jobs`)
 
@@ -173,6 +190,7 @@ interface OpportunitySourceAdapter {
 | `title` | `title` | Direct |
 | `companyName` | `organization.title` | Direct |
 | `location` | `cities[0].title` | First city, else `null` |
+| `remoteRegions` | — | `['Pakistan']` — SkillzDunya is Pakistan-only by source scope. Documented product fact, not inference. |
 | `workMode` | — | Constant `'onsite'` (SkillzDunya does not label work mode; treat as onsite by default) |
 | `employmentType` | — | `'unknown'` — not exposed per-listing |
 | `seniority` | — | `null` |
@@ -215,6 +233,7 @@ create table public.opportunities (
   employment_type text not null default 'unknown',
   seniority text,
   categories text[] not null default '{}',
+  remote_regions text[] not null default '{}',
 
   salary_min numeric,
   salary_max numeric,
@@ -243,7 +262,13 @@ create index opportunities_source_key_idx on public.opportunities (source_key);
 create index opportunities_status_idx on public.opportunities (status);
 create index opportunities_published_at_idx on public.opportunities (published_at desc nulls last);
 create index opportunities_last_seen_at_idx on public.opportunities (last_seen_at desc);
+create index opportunities_remote_regions_gin on public.opportunities using gin (remote_regions);
 ```
+
+**Why `remote_regions` is a dedicated column, not buried in `raw`:**
+- The product is *profile-aware job discovery*. The core question for a Pakistan-based user is "can I actually apply to this?" — that is a filter on eligibility, not a display detail.
+- Burying it in `raw jsonb` would force every future filter (PR-08 matching, PR-10 ranking) to dig through source-specific payload shapes, re-introducing source-specific logic into the persistence layer — exactly what the adapter architecture is designed to prevent.
+- GIN index makes "jobs open to Pakistan" a cheap query.
 
 **RLS policy:**
 - `SELECT` — `authenticated` role only (platform-wide read). No anonymous access.
@@ -279,9 +304,10 @@ POST /api/opportunities/sync
   Returns: { sourceKey, itemsFetched, itemsInserted, itemsUpdated, fetchedAt, sourceError?: SourceError }
   Behaviour: fetch one page from the adapter, upsert into opportunities, return counts.
              Does NOT run in a background worker. Synchronous for PR-06.
+  Timeout: adapter enforces a 10-second AbortController timeout → SourceError.code = 'timeout'.
 
 GET /api/opportunities
-  Query: source_key?, status?, q?, page?, page_size?
+  Query: source_key?, status?, remote_region?, q?, page?, page_size?
   Auth: SupabaseAuthGuard
   Returns: { items: Opportunity[], totalCount, page, pageSize }
 
@@ -300,8 +326,8 @@ GET /api/opportunities/:id
 
 Minimal, matching existing shadcn/Tailwind conventions:
 
-- **`/opportunities`** — list page with source filter, status filter, search box. Shows: title, company, location, source badge, freshness badge (`open` / `stale` / `closed`), posted date.
-- **`/opportunities/[id]`** — detail page showing all normalized fields, **canonical source link** (`source_url`), **source attribution** ("View on Himalayas"), apply link if present.
+- **`/opportunities`** — list page with source filter, status filter, remote-region filter, search box. Shows: title, company, location, source badge, freshness badge (`open` / `stale` / `closed`), posted date.
+- **`/opportunities/[id]`** — detail page showing all normalized fields, **canonical source link** (`source_url`), **source attribution** ("View on Himalayas"), apply link if present, and remote-eligibility list.
 - **Hunt creation form** — add an option to sync from Himalayas / SkillzDunya (in addition to the existing "Demo listings" option).
 
 **Explicit non-goals for PR-06 UI:**
@@ -321,6 +347,8 @@ These belong to PR-08 (save/apply) and PR-10 (AI ranking).
 - `normalize()` on a fixed fixture → exact expected `NormalizedOpportunity`
 - `normalize()` on missing fields → `null`/`'unknown'` (never inferred)
 - `normalize()` on malformed payload → returns `null` (skipped, not thrown)
+- **Himalayas `location` derivation** — 0 / 1 / 2+ restrictions produce `'Remote'` / `<country>` / `'Remote (N countries)'` respectively, and `remoteRegions` preserves the full list
+- **SkillzDunya `remoteRegions`** — always `['Pakistan']`
 - Rate-limit throttle: mock timers, assert no more than N requests in window
 - Error mapping: HTTP 429 → `SourceError.code === 'rate_limit'`; timeout → `'timeout'`; parse failure → `'parse'`
 
@@ -328,13 +356,13 @@ These belong to PR-08 (save/apply) and PR-10 (AI ranking).
 
 - `POST /api/opportunities/sync` with mocked adapter → items inserted into DB with expected fields
 - Replay same sync twice → unique constraint prevents duplicates; `last_seen_at` updated
-- `GET /api/opportunities` filters correctly
+- `GET /api/opportunities` filters correctly (including `remote_region=Pakistan`)
 - `GET /api/opportunities/:id` 404s on missing ID
 - RLS: anon user → 401/403; normal user → 200
 
 ### Live smoke test (manual, gated by user consent)
 
-- Real fetch from Himalayas (`?q=react`) → assert ≥1 real opportunity persisted with valid `source_url`
+- Real fetch from Himalayas (`?q=react`) → assert ≥1 real opportunity persisted with valid `source_url` and non-empty `remote_regions` where source provides them
 - Real fetch from SkillzDunya (`?city=lahore`) → same
 - No paid API calls anywhere
 
@@ -350,6 +378,7 @@ These belong to PR-08 (save/apply) and PR-10 (AI ranking).
 - [ ] `/opportunities` list page + `/opportunities/[id]` detail page with source attribution
 - [ ] Provenance visible on detail page (canonical URL, source name, attribution)
 - [ ] Freshness visible on list and detail
+- [ ] Remote eligibility (`remote_regions`) visible on detail page
 - [ ] API tests + e2e still pass
 - [ ] Web lint remains 0/0
 - [ ] `docs/SOURCES.md` updated with any new field discoveries
@@ -363,10 +392,11 @@ Do **not** guess these — check the live API:
 
 1. Himalayas per-job identifier: `guid`? `id`? `slug`? URL pattern for `sourceUrl`?
 2. Himalayas `seniority` array — always populated? Multiple values?
-3. SkillzDunya pagination parameter name: `page`? `offset`? `cursor`?
-4. SkillzDunya `salary_range` parse strategy — is `PKR` always the prefix? What about international listings?
-5. Himalayas filter parameters: does `?q=react` search title only, or description too? Does `?country=PK` work?
-6. Both: does the API set `Cache-Control` or rate-limit headers we should honor?
+3. Himalayas `locationRestrictions` — plain strings, ISO codes, or objects? (directly affects `remoteRegions` normalization)
+4. SkillzDunya pagination parameter name: `page`? `offset`? `cursor`?
+5. SkillzDunya `salary_range` parse strategy — is `PKR` always the prefix? What about international listings?
+6. Himalayas filter parameters: does `?q=react` search title only, or description too? Does `?country=PK` work?
+7. Both: does the API set `Cache-Control` or rate-limit headers we should honor?
 
 Answers to these go into the adapter implementation notes, not guessed in the architecture.
 
@@ -381,6 +411,3 @@ Answers to these go into the adapter implementation notes, not guessed in the ar
 5. Verify end-to-end: real fetch → opportunity in DB → list page → detail page with attribution
 6. Update `docs/SOURCES.md` and `PROJECT_REFACTOR_PROGRESS.md`
 7. PR-06 complete → PR-07 (durable worker) unblocked
-
----
-
