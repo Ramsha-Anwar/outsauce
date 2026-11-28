@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SupabaseModule } from './supabase/supabase.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { ScrapesModule } from './modules/scrapes/scrapes.module';
+import { OpportunitiesModule } from './modules/opportunities/opportunities.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { LeadsModule } from './modules/leads/leads.module';
 import { ExportModule } from './modules/export/export.module';
@@ -22,6 +23,7 @@ import { ProfileModule } from './modules/profile/profile.module';
     AuthModule,
     ProfileModule,
     ScrapesModule,
+    OpportunitiesModule,
     WebhooksModule,
     LeadsModule,
     ExportModule,
